@@ -4,5 +4,5 @@ export default function ScientificCalculator() {
       <p className="placeholder__title">Scientific</p>
       <p className="placeholder__subtitle">Coming soon</p>
     </div>
-  )
+  );
 }

@@ -4,5 +4,5 @@ export default function RatesCalculator() {
       <p className="placeholder__title">Exchange Rates</p>
       <p className="placeholder__subtitle">Coming soon</p>
     </div>
-  )
+  );
 }
