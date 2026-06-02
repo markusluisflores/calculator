@@ -68,3 +68,30 @@ body {
   color: var(--accent-fg);
   font-weight: 600;
 }
+
+/* Placeholder */
+.placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 320px;
+  gap: 10px;
+  background: #181825;
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-inset);
+}
+
+.placeholder__title {
+  color: var(--text-primary);
+  font-size: 22px;
+  font-weight: 300;
+  letter-spacing: 0.5px;
+}
+
+.placeholder__subtitle {
+  color: var(--text-secondary);
+  font-size: 14px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
