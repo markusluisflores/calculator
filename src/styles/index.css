@@ -127,3 +127,55 @@ body {
   line-height: 1;
   transition: font-size 0.1s ease;
 }
+
+/* ButtonGrid */
+.button-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+/* Button base */
+.btn {
+  border: none;
+  border-radius: var(--radius-btn);
+  padding: 18px 12px;
+  font-size: 20px;
+  font-family: inherit;
+  cursor: pointer;
+  background: var(--bg);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-raised);
+  transition: box-shadow 0.1s ease;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn:active {
+  box-shadow: var(--shadow-inset);
+}
+
+/* Variants */
+.btn--utility {
+  color: var(--text-utility);
+  font-size: 16px;
+}
+
+.btn--operator {
+  background: var(--accent);
+  color: var(--accent-fg);
+  font-weight: 600;
+  box-shadow: none;
+}
+
+.btn--operator:active {
+  filter: brightness(0.88);
+  box-shadow: none;
+}
+
+/* Wide zero button */
+.btn--span-2 {
+  grid-column: span 2;
+  text-align: left;
+  padding-left: 28px;
+}
