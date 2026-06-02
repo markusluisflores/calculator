@@ -50,11 +50,19 @@ function processKey(s, key) {
   if (key === 'AC') return INITIAL
 
   if (key === '+/−') {
-    return { ...s, input: fmt(-inputNum) }
+    const negated = -inputNum
+    if (s.phase === 'operator') {
+      return { ...s, input: fmt(negated), pendingVal: negated }
+    }
+    return { ...s, input: fmt(negated) }
   }
 
   if (key === '%') {
-    return { ...s, input: fmt(inputNum / 100) }
+    const pct = inputNum / 100
+    if (s.phase === 'operator') {
+      return { ...s, input: fmt(pct), pendingVal: pct }
+    }
+    return { ...s, input: fmt(pct) }
   }
 
   if (OPS.includes(key)) {
@@ -90,7 +98,7 @@ function processKey(s, key) {
 
   if (key === 'Backspace') {
     if (s.phase !== 'typing') return s
-    if (s.input.length <= 1) return { ...s, input: '0' }
+    if (s.input.length <= 1 || s.input === '-') return { ...s, input: '0' }
     return { ...s, input: s.input.slice(0, -1) }
   }
 
