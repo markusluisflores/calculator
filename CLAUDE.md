@@ -3,14 +3,16 @@
 A Neumorphic Dark web calculator built with Vite + React.
 
 ## Stack
-- Vite 5 + React 18
+- Vite 8 + React 19
 - Plain CSS (no UI libraries)
 - No test framework in V1 (manual browser testing)
 
 ## Project Structure
 - `src/components/` — presentational React components
 - `src/hooks/useCalculator.js` — all calculator logic
-- `src/styles/index.css` — all CSS with neumorphic custom properties
+- `src/styles/index.css` — all CSS with neumorphic custom properties (created in Task 2 — currently src/index.css exists as Vite default)
+
+Note: `src/components/`, `src/hooks/`, and `src/styles/` directories are created during implementation tasks 2–8.
 
 ## Dev Commands
 - `npm run dev` — start dev server at http://localhost:5173
