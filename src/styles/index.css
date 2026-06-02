@@ -38,3 +38,33 @@ body {
   max-width: 380px;
   padding: 24px 16px;
 }
+
+/* TabBar */
+.tab-bar {
+  background: #181825;
+  border-radius: var(--radius-pill);
+  padding: 4px;
+  display: flex;
+  gap: 4px;
+  box-shadow: var(--shadow-inset);
+  margin-bottom: 20px;
+}
+
+.tab-item {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-family: inherit;
+  padding: 8px 4px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.tab-item--active {
+  background: var(--accent);
+  color: var(--accent-fg);
+  font-weight: 600;
+}
