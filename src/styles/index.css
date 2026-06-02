@@ -179,3 +179,10 @@ body {
   text-align: left;
   padding-left: 28px;
 }
+
+/* Calculator */
+.calculator {
+  background: var(--bg);
+  border-radius: var(--radius-card);
+  padding: 20px;
+}
