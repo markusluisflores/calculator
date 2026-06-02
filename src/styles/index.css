@@ -95,3 +95,35 @@ body {
   letter-spacing: 1px;
   text-transform: uppercase;
 }
+
+/* Display */
+.display {
+  background: #181825;
+  border-radius: var(--radius-display);
+  padding: 16px 20px 18px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-inset);
+  text-align: right;
+  min-height: 96px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.display__expression {
+  color: var(--text-secondary);
+  font-size: 15px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.display__result {
+  color: var(--text-primary);
+  font-weight: 200;
+  letter-spacing: -1px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  transition: font-size 0.1s ease;
+}
