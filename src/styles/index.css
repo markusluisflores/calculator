@@ -230,6 +230,180 @@ body {
   padding: 20px;
 }
 
+/* ── DEG/RAD pill ── */
+.deg-rad-pill {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 2px;
+  display: flex;
+  gap: 1px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.deg-rad-pill:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.deg-rad-pill__seg {
+  font-size: 9px;
+  font-weight: 600;
+  font-family: inherit;
+  padding: 3px 10px;
+  border-radius: 16px;
+  color: var(--text-secondary);
+  letter-spacing: 0.04em;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.deg-rad-pill__seg--active {
+  background: var(--accent);
+  color: var(--accent-fg);
+}
+
+/* ── Scientific button grid ── */
+.sci-button-grid {
+  margin-bottom: 10px;
+}
+
+/* Scientific function buttons (sin, cos, x², √x, π …) */
+.btn--scientific {
+  background: var(--surface-utility);
+  color: var(--text-secondary);
+  font-size: 13px;
+  padding: 10px 6px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-btn);
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background 0.15s ease,
+    filter 0.15s ease,
+    transform 0.12s ease;
+}
+
+.btn--scientific:hover {
+  background: #2e3a50;
+}
+
+.btn--scientific:active {
+  background: #323d55;
+  transform: scale(0.97);
+}
+
+/* Utility buttons in the scientific rows (( ), n!, ⌫, AC) */
+.btn--sci-utility {
+  background: var(--surface-utility);
+  color: var(--text-utility);
+  font-size: 14px;
+  padding: 10px 6px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-btn);
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background 0.15s ease,
+    transform 0.12s ease;
+}
+
+.btn--sci-utility:hover {
+  background: #2e3a50;
+}
+
+.btn--sci-utility:active {
+  background: #323d55;
+  transform: scale(0.97);
+}
+
+/* 2nd key — inactive: outlined green */
+.btn--second-key {
+  background: var(--surface-utility);
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  padding: 10px 6px;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-btn);
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    transform 0.12s ease;
+}
+
+.btn--second-key:hover {
+  background: rgba(34, 197, 94, 0.1);
+}
+
+/* 2nd key — active: filled green */
+.btn--second-key-active {
+  background: var(--accent);
+  color: var(--accent-fg);
+  font-size: 14px;
+  font-weight: 700;
+  padding: 10px 6px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-btn);
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    transform 0.12s ease;
+}
+
+.btn--second-key-active:hover {
+  filter: brightness(1.1);
+}
+
+.btn--second-key-active:active {
+  transform: scale(0.97);
+}
+
+/* Dual-label layout inside scientific buttons */
+.sci-btn-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  line-height: 1.1;
+  pointer-events: none;
+}
+
+.sci-btn-second {
+  font-size: 8px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: color 0.15s ease;
+  min-height: 10px;
+}
+
+.sci-btn-second--active {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.sci-btn-primary {
+  font-size: 13px;
+}
+
+.btn--scientific:focus-visible,
+.btn--sci-utility:focus-visible,
+.btn--second-key:focus-visible,
+.btn--second-key-active:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
