@@ -1,6 +1,11 @@
 import { useState, useEffect } from "react";
 import * as math from "mathjs";
 
+// Base scope: includes ln (math.js uses 'log' for natural log)
+const BASE_SCOPE = {
+  ln: Math.log,
+};
+
 // DEG scope: overrides trig functions to accept/return degrees
 const DEG_SCOPE = {
   sin: (x) => Math.sin((x * Math.PI) / 180),
@@ -58,7 +63,8 @@ function fmt(num) {
 function safeEvaluate(expr, isDeg) {
   if (!expr) return null;
   try {
-    const result = math.evaluate(expr, isDeg ? DEG_SCOPE : {});
+    const scope = isDeg ? { ...BASE_SCOPE, ...DEG_SCOPE } : BASE_SCOPE;
+    const result = math.evaluate(expr, scope);
     if (typeof result !== "number") return null;
     return fmt(result);
   } catch {
@@ -125,10 +131,12 @@ export default function useScientificCalculator() {
 
     if (key === "DEG/RAD") {
       setAngleMode((prev) => (prev === "DEG" ? "RAD" : "DEG"));
+      setIsSecond(false);
       return;
     }
 
     if (key === "=") {
+      if (!expression) return;
       const val = safeEvaluate(expression, angleMode === "DEG");
       if (val === null || val === "Error") {
         setResult("Error");
