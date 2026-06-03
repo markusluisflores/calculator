@@ -29,6 +29,8 @@ const FUNCTION_TOKENS = [
   "sqrt(",
   "^(1/",
   "^(",
+  "^2",
+  "pi",
 ];
 
 // Primary button label → expression token
@@ -164,6 +166,7 @@ export default function useScientificCalculator() {
         if (prev.startsWith("-")) return prev.slice(1);
         return "-" + prev;
       });
+      setIsSecond(false);
       return;
     }
 
@@ -172,6 +175,12 @@ export default function useScientificCalculator() {
       const token =
         isSecond && key in SECOND_MAP ? SECOND_MAP[key] : PRIMARY_MAP[key];
       setExpression((prev) => prev + token);
+      setIsSecond(false);
+      return;
+    }
+
+    if (key === "%") {
+      setExpression((prev) => prev + "/100");
       setIsSecond(false);
       return;
     }

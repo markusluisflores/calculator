@@ -9,6 +9,7 @@ export default function ScientificCalculator() {
 
   const badge = (
     <button
+      type="button"
       className="deg-rad-pill"
       onClick={() => handleButton("DEG/RAD")}
       aria-label={`Angle mode: ${angleMode}. Tap to switch.`}
