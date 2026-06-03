@@ -60,11 +60,15 @@ function fmt(num) {
   return s.includes(".") ? s.replace(/\.?0+$/, "") : s;
 }
 
+function normalizeExpr(expr) {
+  return expr.replace(/×/g, "*").replace(/÷/g, "/").replace(/−/g, "-");
+}
+
 function safeEvaluate(expr, isDeg) {
   if (!expr) return null;
   try {
     const scope = isDeg ? { ...BASE_SCOPE, ...DEG_SCOPE } : BASE_SCOPE;
-    const result = math.evaluate(expr, scope);
+    const result = math.evaluate(normalizeExpr(expr), scope);
     if (typeof result !== "number") return null;
     return fmt(result);
   } catch {
