@@ -30,6 +30,7 @@ function ScientificButton({ btn, isSecond, onPress }) {
 
   return (
     <button
+      type="button"
       className={`btn btn--${variant}`}
       onClick={() => onPress(btn.label)}
     >

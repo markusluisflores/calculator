@@ -1,9 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import * as math from "mathjs";
 
-// Base scope: includes ln (math.js uses 'log' for natural log)
+// Base scope: includes ln (math.js uses 'log' for natural log) and
+// out-of-domain guards for inverse trig so we get NaN (→ "Error") instead
+// of a Complex number when |x| > 1 in RAD mode.
 const BASE_SCOPE = {
   ln: Math.log,
+  asin: (x) => (Math.abs(x) > 1 ? NaN : Math.asin(x)),
+  acos: (x) => (Math.abs(x) > 1 ? NaN : Math.acos(x)),
+  atan: Math.atan,
 };
 
 // DEG scope: overrides trig functions to accept/return degrees
@@ -45,6 +50,32 @@ const PRIMARY_MAP = {
   "n!": "!",
 };
 
+// Keyboard → button label mapping
+const KEYMAP = {
+  0: "0",
+  1: "1",
+  2: "2",
+  3: "3",
+  4: "4",
+  5: "5",
+  6: "6",
+  7: "7",
+  8: "8",
+  9: "9",
+  ".": ".",
+  "+": "+",
+  "-": "−",
+  "*": "×",
+  "/": "÷",
+  Enter: "=",
+  "=": "=",
+  Escape: "AC",
+  Backspace: "⌫",
+  "(": "( )",
+  ")": "( )",
+  "%": "%",
+};
+
 // 2nd-key button label → expression token (keyed by primary label)
 const SECOND_MAP = {
   sin: "asin(",
@@ -58,6 +89,10 @@ const SECOND_MAP = {
 
 function fmt(num) {
   if (!isFinite(num)) return "Error";
+  const abs = Math.abs(num);
+  if (abs >= 1e10 || (abs > 0 && abs < 1e-6)) {
+    return num.toExponential(6).replace(/\.?0+e/, "e");
+  }
   const s = String(+num.toPrecision(10));
   return s.includes(".") ? s.replace(/\.?0+$/, "") : s;
 }
@@ -106,6 +141,28 @@ export default function useScientificCalculator() {
   const [isSecond, setIsSecond] = useState(false);
   const [angleMode, setAngleMode] = useState("DEG");
 
+  const afterResultRef = useRef(false);
+  const handleButtonRef = useRef(null);
+
+  // Keep handleButtonRef current on every render so the keydown listener
+  // always calls the latest version of handleButton without re-registering.
+  useEffect(() => {
+    handleButtonRef.current = handleButton;
+  });
+
+  // Global keyboard listener — registered once, reads via ref.
+  useEffect(() => {
+    function onKeyDown(e) {
+      const key = KEYMAP[e.key];
+      if (key) {
+        e.preventDefault();
+        handleButtonRef.current(key);
+      }
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
+
   // Live evaluation on every expression or angle-mode change
   useEffect(() => {
     if (!expression) {
@@ -121,6 +178,7 @@ export default function useScientificCalculator() {
       setExpression("");
       setResult("0");
       setIsSecond(false);
+      afterResultRef.current = false;
       return;
     }
 
@@ -149,6 +207,7 @@ export default function useScientificCalculator() {
       } else {
         setResult(val);
         setExpression(val);
+        afterResultRef.current = true;
       }
       setIsSecond(false);
       return;
@@ -186,6 +245,13 @@ export default function useScientificCalculator() {
     }
 
     // Default: append key as-is (digits, operators, decimal, %)
+    const isDigitOrDecimal = /^[0-9.]$/.test(key);
+    if (afterResultRef.current && isDigitOrDecimal) {
+      afterResultRef.current = false;
+      setExpression(key);
+      return;
+    }
+    afterResultRef.current = false;
     setExpression((prev) => prev + key);
   }
 
