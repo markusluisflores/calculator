@@ -20,6 +20,7 @@ Note: `src/components/`, `src/hooks/`, and `src/styles/` directories are created
 - `npm run preview` — preview production build
 
 ## Design
-- Background: #1e1e2e (deep navy)
-- Accent: #cba6f7 (lavender) for operators and active tab
-- Neumorphic shadows: raised buttons, inset display and tab container
+- Background: #0f172a (deep navy) / Card surface: #1b2336
+- Accent: #22c55e (bright green) for operators and active tab
+- Flat elevated card buttons with subtle border
+- Inter font via Google Fonts
