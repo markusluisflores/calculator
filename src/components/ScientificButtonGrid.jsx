@@ -41,7 +41,11 @@ function ScientificButton({ btn, isSecond, onPress }) {
           >
             {btn.secondLabel}
           </span>
-          <span className="sci-btn-primary">{btn.label}</span>
+          <span
+            className={`sci-btn-primary${btn.secondLabel && !showSecond ? " sci-btn-primary--active" : ""}${showSecond ? " sci-btn-primary--dim" : ""}`}
+          >
+            {btn.label}
+          </span>
         </span>
       ) : (
         btn.label

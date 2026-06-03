@@ -394,6 +394,18 @@ body {
 
 .sci-btn-primary {
   font-size: 13px;
+  transition:
+    color 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.sci-btn-primary--active {
+  color: var(--accent);
+}
+
+.sci-btn-primary--dim {
+  color: var(--text-secondary);
+  opacity: 0.45;
 }
 
 .btn--scientific:focus-visible,

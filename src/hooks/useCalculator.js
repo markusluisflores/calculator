@@ -53,6 +53,8 @@ const INITIAL = {
   // 'operator' — operator just pressed, next digit starts right operand
   // 'result'   — = was pressed, next digit starts fresh
   phase: "typing",
+  lastOp: null, // last operator used — enables = repeat
+  lastArg: null, // last right operand used — enables = repeat
 };
 
 // Pure state transition — takes current state + key, returns next state.
@@ -104,6 +106,19 @@ function processKey(s, key) {
   }
 
   if (key === "=") {
+    // Repeat last operation when already in result phase
+    if (s.phase === "result" && s.lastOp !== null) {
+      const result = evaluate(inputNum, s.lastOp, s.lastArg);
+      if (result === null)
+        return { ...INITIAL, input: "Error", phase: "result" };
+      const r = fmt(result);
+      return {
+        ...s,
+        input: r,
+        expression: `${s.input} ${s.lastOp} ${fmt(s.lastArg)} =`,
+        phase: "result",
+      };
+    }
     if (!s.pendingOp) return s;
     const result = evaluate(s.pendingVal, s.pendingOp, inputNum);
     if (result === null) return { ...INITIAL, input: "Error", phase: "result" };
@@ -113,6 +128,8 @@ function processKey(s, key) {
       pendingOp: null,
       pendingVal: null,
       phase: "result",
+      lastOp: s.pendingOp,
+      lastArg: inputNum,
     };
   }
 

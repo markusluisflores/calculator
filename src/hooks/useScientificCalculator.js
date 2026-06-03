@@ -113,6 +113,21 @@ function safeEvaluate(expr, isDeg) {
   }
 }
 
+// Returns the last top-level binary operator + its right operand (e.g. "+3").
+// Returns null if no top-level binary operator exists (e.g. "sqrt(16)").
+function extractRepeatSuffix(expr) {
+  let depth = 0;
+  for (let i = expr.length - 1; i > 0; i--) {
+    const ch = expr[i];
+    if (ch === ")") depth++;
+    else if (ch === "(") depth--;
+    else if (depth === 0 && /[+\-×÷*/]/.test(ch)) {
+      return expr.slice(i);
+    }
+  }
+  return null;
+}
+
 function applyBackspace(expr) {
   for (const token of FUNCTION_TOKENS) {
     if (expr.endsWith(token)) return expr.slice(0, -token.length);
@@ -142,6 +157,7 @@ export default function useScientificCalculator() {
   const [angleMode, setAngleMode] = useState("DEG");
 
   const afterResultRef = useRef(false);
+  const repeatSuffixRef = useRef(null);
   const handleButtonRef = useRef(null);
 
   // Keep handleButtonRef current on every render so the keydown listener
@@ -179,6 +195,7 @@ export default function useScientificCalculator() {
       setResult("0");
       setIsSecond(false);
       afterResultRef.current = false;
+      repeatSuffixRef.current = null;
       return;
     }
 
@@ -201,9 +218,16 @@ export default function useScientificCalculator() {
 
     if (key === "=") {
       if (!expression) return;
-      const val = safeEvaluate(expression, angleMode === "DEG");
+      let exprToEval = expression;
+      if (afterResultRef.current && repeatSuffixRef.current !== null) {
+        exprToEval = expression + repeatSuffixRef.current;
+      } else if (!afterResultRef.current) {
+        repeatSuffixRef.current = extractRepeatSuffix(expression);
+      }
+      const val = safeEvaluate(exprToEval, angleMode === "DEG");
       if (val === null || val === "Error") {
         setResult("Error");
+        repeatSuffixRef.current = null;
       } else {
         setResult(val);
         setExpression(val);
