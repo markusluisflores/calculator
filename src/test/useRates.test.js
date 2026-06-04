@@ -229,3 +229,44 @@ describe("useRates — retry", () => {
     expect(result.current.rates).toEqual(MOCK_RATES_USD.rates);
   });
 });
+
+describe("useRates — search filter", () => {
+  async function loadedHook() {
+    vi.stubGlobal("fetch", makeFetch());
+    const hook = renderHook(() => useRates());
+    await waitFor(() => expect(hook.result.current.loading).toBe(false));
+    return hook;
+  }
+
+  it("returns all currencies except from when search is empty", async () => {
+    const { result } = await loadedHook(); // from=USD, 4 mock currencies → 3 shown
+    expect(result.current.currencies).toHaveLength(3);
+    expect(result.current.currencies.map((c) => c.code)).not.toContain("USD");
+  });
+
+  it("filters by currency code, case-insensitive", async () => {
+    const { result } = await loadedHook();
+    act(() => result.current.setSearch("eur"));
+    expect(result.current.currencies).toHaveLength(1);
+    expect(result.current.currencies[0].code).toBe("EUR");
+  });
+
+  it("filters by currency name, case-insensitive", async () => {
+    const { result } = await loadedHook();
+    act(() => result.current.setSearch("pound"));
+    expect(result.current.currencies).toHaveLength(1);
+    expect(result.current.currencies[0].code).toBe("GBP");
+  });
+
+  it("returns empty array when no match", async () => {
+    const { result } = await loadedHook();
+    act(() => result.current.setSearch("zzz"));
+    expect(result.current.currencies).toHaveLength(0);
+  });
+
+  it("excludes the base currency regardless of search", async () => {
+    const { result } = await loadedHook();
+    act(() => result.current.setSearch("dollar")); // matches "US Dollar" (USD)
+    expect(result.current.currencies.map((c) => c.code)).not.toContain("USD");
+  });
+});
