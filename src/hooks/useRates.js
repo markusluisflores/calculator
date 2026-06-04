@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 
-const CURRENCIES_URL = "https://api.frankfurter.app/currencies";
-const ratesUrl = (base) => `https://api.frankfurter.app/latest?from=${base}`;
+const CURRENCIES_URL = "https://api.frankfurter.dev/v1/currencies";
+const ratesUrl = (base) => `https://api.frankfurter.dev/v1/latest?from=${base}`;
 
 const currenciesCache = { data: null };
 const ratesCache = {};
