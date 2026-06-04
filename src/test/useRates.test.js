@@ -84,3 +84,21 @@ describe("useRates — initial fetch", () => {
     expect(result.current.amount).toBe("1");
   });
 });
+
+describe("useRates — error states", () => {
+  it("sets error when rates fetch fails", async () => {
+    vi.stubGlobal("fetch", makeFetch({ rates: false }));
+    const { result } = renderHook(() => useRates());
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(result.current.error).toMatch(/Could not fetch rates/);
+  });
+
+  it("falls back to empty currencies when currencies fetch fails, rates still load", async () => {
+    vi.stubGlobal("fetch", makeFetch({ currencies: false }));
+    const { result } = renderHook(() => useRates());
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(result.current.allCurrencies).toEqual([]);
+    expect(result.current.error).toBeNull();
+    expect(result.current.rates).toEqual(MOCK_RATES_USD.rates);
+  });
+});
