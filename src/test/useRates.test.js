@@ -153,3 +153,79 @@ describe("useRates — from change and session cache", () => {
     expect(currFetches).toHaveLength(1);
   });
 });
+
+describe("useRates — conversion", () => {
+  async function loadedHook() {
+    vi.stubGlobal("fetch", makeFetch());
+    const hook = renderHook(() => useRates());
+    await waitFor(() => expect(hook.result.current.loading).toBe(false));
+    return hook;
+  }
+
+  it("computes result as amount × rates[to]", async () => {
+    const { result } = await loadedHook();
+    act(() => result.current.setAmount("100"));
+    const expected = (100 * 0.9214).toLocaleString(undefined, {
+      maximumFractionDigits: 4,
+    });
+    expect(result.current.result).toBe(expected);
+  });
+
+  it("shows '—' when amount is empty", async () => {
+    const { result } = await loadedHook();
+    act(() => result.current.setAmount(""));
+    expect(result.current.result).toBe("—");
+  });
+
+  it("shows '—' when amount is non-numeric", async () => {
+    const { result } = await loadedHook();
+    act(() => result.current.setAmount("abc"));
+    expect(result.current.result).toBe("—");
+  });
+
+  it("shows '—' when to equals from (base not in API response)", async () => {
+    const { result } = await loadedHook();
+    act(() => result.current.setTo("USD")); // from is already USD; rates[USD] is undefined
+    expect(result.current.result).toBe("—");
+  });
+});
+
+describe("useRates — swap", () => {
+  it("exchanges from and to", async () => {
+    vi.stubGlobal("fetch", makeFetch());
+    const { result } = renderHook(() => useRates());
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    expect(result.current.from).toBe("USD");
+    expect(result.current.to).toBe("EUR");
+    act(() => result.current.swap());
+    expect(result.current.from).toBe("EUR");
+    expect(result.current.to).toBe("USD");
+  });
+});
+
+describe("useRates — retry", () => {
+  it("clears error and re-fetches on retry", async () => {
+    let callCount = 0;
+    vi.stubGlobal(
+      "fetch",
+      vi.fn((url) => {
+        if (url.includes("/currencies"))
+          return Promise.resolve({
+            json: () => Promise.resolve(MOCK_CURRENCIES),
+          });
+        callCount++;
+        if (callCount === 1) return Promise.reject(new Error("Network error"));
+        return Promise.resolve({ json: () => Promise.resolve(MOCK_RATES_USD) });
+      }),
+    );
+    const { result } = renderHook(() => useRates());
+    await waitFor(() => expect(result.current.error).toBeTruthy());
+
+    act(() => result.current.retry());
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    expect(result.current.error).toBeNull();
+    expect(result.current.rates).toEqual(MOCK_RATES_USD.rates);
+  });
+});
