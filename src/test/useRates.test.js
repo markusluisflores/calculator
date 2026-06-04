@@ -102,3 +102,54 @@ describe("useRates — error states", () => {
     expect(result.current.rates).toEqual(MOCK_RATES_USD.rates);
   });
 });
+
+describe("useRates — from change and session cache", () => {
+  it("fetches new rates when from changes", async () => {
+    vi.stubGlobal("fetch", makeFetch());
+    const { result } = renderHook(() => useRates());
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    act(() => result.current.setFrom("EUR"));
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    expect(result.current.rates).toEqual(MOCK_RATES_EUR.rates);
+    expect(result.current.from).toBe("EUR");
+  });
+
+  it("uses the session cache on second visit to same base — no extra fetch", async () => {
+    const mockFn = makeFetch();
+    vi.stubGlobal("fetch", mockFn);
+    const { result } = renderHook(() => useRates());
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    act(() => result.current.setFrom("EUR"));
+    await waitFor(() =>
+      expect(result.current.rates).toEqual(MOCK_RATES_EUR.rates),
+    );
+
+    act(() => result.current.setFrom("USD"));
+    await waitFor(() =>
+      expect(result.current.rates).toEqual(MOCK_RATES_USD.rates),
+    );
+
+    const usdFetches = mockFn.mock.calls.filter(([url]) =>
+      url.includes("from=USD"),
+    );
+    expect(usdFetches).toHaveLength(1); // only the initial mount fetch
+  });
+
+  it("does not re-fetch currencies when from changes", async () => {
+    const mockFn = makeFetch();
+    vi.stubGlobal("fetch", mockFn);
+    const { result } = renderHook(() => useRates());
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    act(() => result.current.setFrom("EUR"));
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    const currFetches = mockFn.mock.calls.filter(([url]) =>
+      url.includes("/currencies"),
+    );
+    expect(currFetches).toHaveLength(1);
+  });
+});
