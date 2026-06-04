@@ -44,3 +44,43 @@ beforeEach(() => {
 describe("useRates — scaffold", () => {
   it.todo("loads currency list on mount");
 });
+
+describe("useRates — initial fetch", () => {
+  it("starts in loading state", () => {
+    vi.stubGlobal("fetch", makeFetch());
+    const { result } = renderHook(() => useRates());
+    expect(result.current.loading).toBe(true);
+  });
+
+  it("clears loading and populates rates after fetch succeeds", async () => {
+    vi.stubGlobal("fetch", makeFetch());
+    const { result } = renderHook(() => useRates());
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(result.current.rates).toEqual(MOCK_RATES_USD.rates);
+    expect(result.current.rateDate).toBe("2026-06-04");
+  });
+
+  it("populates currencies from API with code and name", async () => {
+    vi.stubGlobal("fetch", makeFetch());
+    const { result } = renderHook(() => useRates());
+    await waitFor(() =>
+      expect(result.current.allCurrencies.length).toBeGreaterThan(0),
+    );
+    expect(result.current.allCurrencies).toContainEqual({
+      code: "EUR",
+      name: "Euro",
+    });
+    expect(result.current.allCurrencies).toContainEqual({
+      code: "GBP",
+      name: "British Pound",
+    });
+  });
+
+  it("defaults to from=USD, to=EUR, amount=1", () => {
+    vi.stubGlobal("fetch", makeFetch());
+    const { result } = renderHook(() => useRates());
+    expect(result.current.from).toBe("USD");
+    expect(result.current.to).toBe("EUR");
+    expect(result.current.amount).toBe("1");
+  });
+});
