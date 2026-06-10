@@ -15,8 +15,8 @@ export default function useRates() {
   const [allCurrencies, setAllCurrencies] = useState([]);
   const [rates, setRates] = useState({});
   const [rateDate, setRateDate] = useState("");
-  const [fromCurrency, setFromCurrency] = useState("USD");
-  const [toCurrency, setToCurrency] = useState("EUR");
+  const [fromCurrency, setFromCurrency] = useState("CAD");
+  const [toCurrency, setToCurrency] = useState("PHP");
   const [amount, setAmount] = useState("");
   const [pickerTarget, setPickerTarget] = useState(null);
   const [tableExpanded, setTableExpanded] = useState(false);

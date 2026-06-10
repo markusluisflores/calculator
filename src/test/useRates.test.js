@@ -7,12 +7,14 @@ const MOCK_CURRENCIES = {
   EUR: "Euro",
   GBP: "British Pound",
   JPY: "Japanese Yen",
+  PHP: "Philippine Peso",
+  CAD: "Canadian Dollar",
 };
 
 const MOCK_RATES_USD = {
   base: "USD",
   date: "2026-06-04",
-  rates: { EUR: 0.9214, GBP: 0.7891, JPY: 149.82 },
+  rates: { EUR: 0.9214, GBP: 0.7891, JPY: 149.82, PHP: 58.42 },
 };
 
 const MOCK_RATES_EUR = {
@@ -74,11 +76,11 @@ describe("useRates — initial fetch", () => {
     });
   });
 
-  it("defaults to fromCurrency=USD, toCurrency=EUR, amount=''", () => {
+  it("defaults to fromCurrency=CAD, toCurrency=PHP, amount=''", () => {
     vi.stubGlobal("fetch", makeFetch());
     const { result } = renderHook(() => useRates());
-    expect(result.current.fromCurrency).toBe("USD");
-    expect(result.current.toCurrency).toBe("EUR");
+    expect(result.current.fromCurrency).toBe("CAD");
+    expect(result.current.toCurrency).toBe("PHP");
     expect(result.current.amount).toBe("");
   });
 
@@ -300,18 +302,18 @@ describe("useRates — result derivation", () => {
     act(() => result.current.pressDigit("1"));
     act(() => result.current.pressDigit("0"));
     act(() => result.current.pressDigit("0"));
-    expect(result.current.result).toBe((100 * 0.9214).toFixed(2));
+    expect(result.current.result).toBe((100 * 58.42).toFixed(2));
   });
 
   it("shows '0.00' when amount is empty", async () => {
     const { result } = await loadedHook();
-    expect(result.current.result).toBe((0 * 0.9214).toFixed(2)); // "0.00"
+    expect(result.current.result).toBe("0.00");
   });
 
   it("shows '—' when toCurrency rate is not in response (e.g. toCurrency = fromCurrency)", async () => {
     const { result } = await loadedHook();
     act(() => result.current.openPicker("to"));
-    act(() => result.current.selectCurrency("USD")); // USD not in USD rates
+    act(() => result.current.selectCurrency("USD")); // USD not in CAD rates
     expect(result.current.result).toBe("—");
   });
 });
@@ -324,11 +326,11 @@ describe("useRates — swap", () => {
     const { result } = renderHook(() => useRates());
     await waitFor(() => expect(result.current.loading).toBe(false));
 
-    expect(result.current.fromCurrency).toBe("USD");
-    expect(result.current.toCurrency).toBe("EUR");
+    expect(result.current.fromCurrency).toBe("CAD");
+    expect(result.current.toCurrency).toBe("PHP");
     act(() => result.current.swap());
-    expect(result.current.fromCurrency).toBe("EUR");
-    expect(result.current.toCurrency).toBe("USD");
+    expect(result.current.fromCurrency).toBe("PHP");
+    expect(result.current.toCurrency).toBe("CAD");
   });
 
   it("moves computed result into amount on swap", async () => {
@@ -339,7 +341,7 @@ describe("useRates — swap", () => {
     act(() => result.current.pressDigit("1"));
     act(() => result.current.pressDigit("0"));
     act(() => result.current.pressDigit("0"));
-    const expectedAmount = (100 * 0.9214).toFixed(2);
+    const expectedAmount = (100 * 58.42).toFixed(2);
     act(() => result.current.swap());
     expect(result.current.amount).toBe(expectedAmount);
   });
@@ -415,8 +417,8 @@ describe("useRates — picker actions", () => {
     const { result } = renderHook(() => useRates());
     await waitFor(() => expect(result.current.loading).toBe(false));
     act(() => result.current.selectCurrency("GBP")); // pickerTarget is null
-    expect(result.current.fromCurrency).toBe("USD");
-    expect(result.current.toCurrency).toBe("EUR");
+    expect(result.current.fromCurrency).toBe("CAD");
+    expect(result.current.toCurrency).toBe("PHP");
   });
 
   it("selectTableCurrency sets toCurrency directly without touching pickerTarget", async () => {
@@ -427,7 +429,7 @@ describe("useRates — picker actions", () => {
     act(() => result.current.selectTableCurrency("JPY")); // should NOT close picker or change fromCurrency
     expect(result.current.toCurrency).toBe("JPY");
     expect(result.current.pickerTarget).toBe("from"); // pickerTarget unchanged
-    expect(result.current.fromCurrency).toBe("USD"); // fromCurrency unchanged
+    expect(result.current.fromCurrency).toBe("CAD"); // fromCurrency unchanged
   });
 });
 
@@ -464,8 +466,8 @@ describe("useRates — search filter", () => {
 
   it("returns all currencies except fromCurrency when search is empty", async () => {
     const { result } = await loadedHook();
-    expect(result.current.currencies).toHaveLength(3);
-    expect(result.current.currencies.map((c) => c.code)).not.toContain("USD");
+    expect(result.current.currencies).toHaveLength(5);
+    expect(result.current.currencies.map((c) => c.code)).not.toContain("CAD");
   });
 
   it("filters by currency code, case-insensitive", async () => {
@@ -490,8 +492,8 @@ describe("useRates — search filter", () => {
 
   it("excludes fromCurrency regardless of search", async () => {
     const { result } = await loadedHook();
-    act(() => result.current.setSearch("dollar"));
-    expect(result.current.currencies.map((c) => c.code)).not.toContain("USD");
+    act(() => result.current.setSearch("canadian"));
+    expect(result.current.currencies.map((c) => c.code)).not.toContain("CAD");
   });
 });
 
