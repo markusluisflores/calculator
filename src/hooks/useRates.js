@@ -129,6 +129,8 @@ export default function useRates() {
     setRetryCount((c) => c + 1);
   };
 
+  const selectTableCurrency = (code) => setToCurrency(code);
+
   return {
     rates,
     currencies,
@@ -152,7 +154,7 @@ export default function useRates() {
     closePicker,
     toggleTable,
     setSearch,
-    setToCurrency,
+    selectTableCurrency,
     retry,
   };
 }

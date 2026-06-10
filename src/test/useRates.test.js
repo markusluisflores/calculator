@@ -393,6 +393,17 @@ describe("useRates — picker actions", () => {
     expect(result.current.fromCurrency).toBe("USD");
     expect(result.current.toCurrency).toBe("EUR");
   });
+
+  it("selectTableCurrency sets toCurrency directly without touching pickerTarget", async () => {
+    vi.stubGlobal("fetch", makeFetch());
+    const { result } = renderHook(() => useRates());
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    act(() => result.current.openPicker("from")); // pickerTarget is "from"
+    act(() => result.current.selectTableCurrency("JPY")); // should NOT close picker or change fromCurrency
+    expect(result.current.toCurrency).toBe("JPY");
+    expect(result.current.pickerTarget).toBe("from"); // pickerTarget unchanged
+    expect(result.current.fromCurrency).toBe("USD"); // fromCurrency unchanged
+  });
 });
 
 // ── toggleTable / setSearch ────────────────────────────────────────────────
