@@ -72,7 +72,11 @@ export default function RatesCalculator() {
       <CurrencyPickerModal
         isOpen={pickerTarget !== null}
         selectedCode={selectedCode}
-        currencies={allCurrencies}
+        currencies={allCurrencies.filter((c) =>
+          pickerTarget === "from"
+            ? c.code !== toCurrency
+            : c.code !== fromCurrency,
+        )}
         onSelect={selectCurrency}
         onClose={closePicker}
       />

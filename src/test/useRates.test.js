@@ -202,7 +202,7 @@ describe("useRates — pressDigit", () => {
     expect(result.current.amount).toBe("1111111111"); // exactly 10
   });
 
-  it("allows digits after a decimal point beyond the 10-digit limit", () => {
+  it("allows up to 2 decimal digits after a 10-digit integer", () => {
     vi.stubGlobal("fetch", makeFetch());
     const { result } = renderHook(() => useRates());
     for (let i = 0; i < 10; i++) {
@@ -210,7 +210,11 @@ describe("useRates — pressDigit", () => {
     }
     act(() => result.current.pressDecimal());
     act(() => result.current.pressDigit("5"));
-    expect(result.current.amount).toBe("1111111111.5");
+    expect(result.current.amount).toBe("1111111111.5"); // 1 decimal digit — allowed
+    act(() => result.current.pressDigit("9"));
+    expect(result.current.amount).toBe("1111111111.59"); // 2 decimal digits — allowed
+    act(() => result.current.pressDigit("3"));
+    expect(result.current.amount).toBe("1111111111.59"); // 3rd digit — blocked
   });
 
   it("enforces 2-digit fraction cap after decimal", () => {
