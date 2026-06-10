@@ -212,6 +212,17 @@ describe("useRates — pressDigit", () => {
     act(() => result.current.pressDigit("5"));
     expect(result.current.amount).toBe("1111111111.5");
   });
+
+  it("enforces 2-digit fraction cap after decimal", () => {
+    vi.stubGlobal("fetch", makeFetch());
+    const { result } = renderHook(() => useRates());
+    act(() => result.current.pressDigit("1"));
+    act(() => result.current.pressDecimal());
+    act(() => result.current.pressDigit("2"));
+    act(() => result.current.pressDigit("3"));
+    act(() => result.current.pressDigit("4")); // should be blocked
+    expect(result.current.amount).toBe("1.23");
+  });
 });
 
 // ── pressDecimal ───────────────────────────────────────────────────────────
@@ -335,6 +346,16 @@ describe("useRates — swap", () => {
     await waitFor(() => expect(result.current.loading).toBe(false));
     act(() => result.current.openPicker("to"));
     act(() => result.current.selectCurrency("USD"));
+    act(() => result.current.swap());
+    expect(result.current.amount).toBe("");
+  });
+
+  it("sets amount to '' on swap when amount is empty (result is 0.00)", async () => {
+    vi.stubGlobal("fetch", makeFetch());
+    const { result } = renderHook(() => useRates());
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    // amount is "" by default, result is "0.00"
+    expect(result.current.result).toBe("0.00");
     act(() => result.current.swap());
     expect(result.current.amount).toBe("");
   });

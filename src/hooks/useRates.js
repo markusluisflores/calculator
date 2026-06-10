@@ -95,6 +95,7 @@ export default function useRates() {
       const dotIdx = prev.indexOf(".");
       const intDigits = dotIdx === -1 ? prev.length : dotIdx;
       if (dotIdx === -1 && intDigits >= 10) return prev;
+      if (dotIdx !== -1 && prev.length - dotIdx > 2) return prev;
       return prev + digit;
     });
   };
@@ -108,7 +109,7 @@ export default function useRates() {
   };
 
   const swap = () => {
-    const swapAmount = result === "—" ? "" : result;
+    const swapAmount = result === "—" || parseFloat(result) === 0 ? "" : result;
     setFromCurrency(toCurrency);
     setToCurrency(fromCurrency);
     setAmount(swapAmount);
