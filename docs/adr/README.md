@@ -6,3 +6,4 @@ Each ADR records a significant decision: what was chosen, why, what alternatives
 | Number | Title | Status | Date |
 |--------|-------|--------|------|
 | [ADR-001](ADR-001-mathjs-for-scientific-expression-evaluation.md) | Use math.js for Scientific Tab Expression Evaluation | Accepted | 2026-06-09 |
+| [ADR-002](ADR-002-bug-logging-process.md) | Bug Logging Process and GitHub Issue Standards | Accepted | 2026-06-09 |
