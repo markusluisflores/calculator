@@ -425,3 +425,441 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ─── Rates Tab ──────────────────────────────────────── */
+
+.rates-calculator {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.rates-search-row {
+  margin-bottom: 8px;
+}
+
+.rates-search-input {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  outline: none;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: inherit;
+  padding: 8px 12px;
+}
+
+.rates-search-input::placeholder {
+  color: var(--text-secondary);
+}
+
+.rates-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.rates-row-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  padding: 11px 16px;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: background 100ms ease;
+}
+
+.rates-row-item:hover {
+  background: var(--surface-utility);
+}
+
+.rates-row-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.rates-code {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  min-width: 36px;
+}
+
+.rates-name {
+  font-size: 12px;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rates-value {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+/* Skeleton shimmer */
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.rates-skeleton {
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(
+    90deg,
+    var(--surface) 25%,
+    var(--surface-utility) 50%,
+    var(--surface) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite linear;
+}
+
+/* Empty + error states */
+.rates-empty {
+  padding: 16px 12px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.rates-error {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rates-error__msg {
+  font-size: 13px;
+  color: #f87171;
+}
+
+.rates-retry {
+  background: var(--accent);
+  border: none;
+  border-radius: 8px;
+  color: var(--accent-fg);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  padding: 6px 16px;
+  cursor: pointer;
+  align-self: center;
+  transition: opacity 150ms ease;
+}
+
+.rates-retry:hover {
+  opacity: 0.9;
+}
+
+.rates-retry:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── RatesDisplay ──────────────────────────────────────────────────────── */
+
+.rates-display {
+  background: var(--surface);
+  border-radius: var(--radius-display);
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.rates-currency-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+}
+
+.rates-currency-amount {
+  font-size: 32px;
+  font-weight: 200;
+  letter-spacing: -1px;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.rates-currency-result {
+  font-size: 32px;
+  font-weight: 200;
+  letter-spacing: -1px;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.rates-currency-btn {
+  background: var(--surface-utility);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  padding: 6px 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 150ms ease;
+}
+
+.rates-currency-btn:hover {
+  background: var(--surface);
+}
+
+.rates-swap-row {
+  display: flex;
+  justify-content: flex-end;
+  padding: 2px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  margin: 2px 0;
+}
+
+.rates-swap {
+  background: transparent;
+  border: none;
+  color: var(--accent);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 150ms ease;
+}
+
+.rates-swap:hover {
+  background: var(--surface-utility);
+}
+
+.rates-hint {
+  font-size: 11px;
+  color: var(--text-secondary);
+  text-align: right;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+  margin-top: 4px;
+}
+
+/* ── RatesNumpad ───────────────────────────────────────────────────────── */
+
+.rates-numpad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+/* ── RatesTable ────────────────────────────────────────────────────────── */
+
+.rates-table {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-btn);
+  overflow: hidden;
+}
+
+.rates-table-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface);
+  border: none;
+  padding: 12px 16px;
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--text-secondary);
+  transition: background 150ms ease;
+}
+
+.rates-table-header:hover {
+  background: var(--surface-utility);
+}
+
+.rates-table-header__label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.rates-table-header__chevron {
+  font-size: 16px;
+  color: var(--text-secondary);
+  transition: transform 200ms ease;
+  transform: rotate(0deg);
+}
+
+.rates-table-header__chevron--open {
+  transform: rotate(90deg);
+}
+
+.rates-table-body {
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+}
+
+/* ── CurrencyPickerModal ───────────────────────────────────────────────── */
+
+.picker-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+}
+
+.picker-modal {
+  width: 100%;
+  max-height: 85vh;
+  background: var(--surface);
+  border-radius: 20px 20px 0 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.picker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.picker-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.picker-close {
+  background: var(--surface-utility);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 150ms ease;
+}
+
+.picker-close:hover {
+  background: var(--bg);
+}
+
+.picker-search {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  outline: none;
+  color: var(--text-primary);
+  font-size: 15px;
+  font-family: inherit;
+  padding: 14px 20px;
+  flex-shrink: 0;
+}
+
+.picker-search::placeholder {
+  color: var(--text-secondary);
+}
+
+.picker-list {
+  overflow-y: auto;
+  flex: 1;
+}
+
+.picker-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  padding: 13px 20px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 100ms ease;
+}
+
+.picker-item:hover {
+  background: var(--surface-utility);
+}
+
+.picker-item--selected {
+  background: rgba(34, 197, 94, 0.06);
+}
+
+.picker-item-code {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  min-width: 44px;
+}
+
+.picker-item-name {
+  font-size: 13px;
+  color: var(--text-secondary);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.picker-item-check {
+  font-size: 14px;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.picker-empty {
+  padding: 24px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-secondary);
+}

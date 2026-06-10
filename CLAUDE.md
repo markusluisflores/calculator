@@ -33,7 +33,15 @@ A web calculator built with Vite + React. Currently ships Basic and Scientific m
 ## Calculator Tabs
 - **Basic** — two-operand state machine, keyboard support, = repeat
 - **Scientific** — math.js expression model, 2nd-key toggle, DEG/RAD, = repeat
-- **Rates** — placeholder (V3)
+- **Rates** — live currency converter + rate table via Frankfurter API (V3 — needs V3.1 redesign to use numpad input)
+
+## Established Interaction Patterns (MUST FOLLOW for new tabs)
+Every tab in this app uses:
+- **Numpad button grid** for digit input — no free-text `<input>` fields for numbers
+- **Display area** at the top showing current input and result
+- **Operator/action buttons** for tab-specific actions (not inline form controls)
+
+Any new tab MUST match this pattern unless explicitly decided otherwise during brainstorming.
 
 ## Feature Development Workflow (MANDATORY)
 Every feature or fix — no matter how small — follows this sequence:
@@ -57,10 +65,16 @@ Every feature or fix — no matter how small — follows this sequence:
 | After completing implementation | `superpowers:requesting-code-review` |
 | Post-implementation cleanup | `/simplify` on changed files |
 | Screenshots / UI verification needed | Always provide the localhost URL; Playwright screenshots may not render in all interfaces |
-| Any UI design decision or layout brainstorm | `ui-ux-pro-max` skill + domain searches before showing mockups |
+| Any UI design decision or layout brainstorm | Consistency audit → platform research → `ui-ux-pro-max` — all before showing mockups |
 
 ## Design Process
-Before presenting any layout options or UI decisions during brainstorming, always invoke the `ui-ux-pro-max` skill and run domain searches relevant to the UI being designed. UX validation must happen before mockups are shown to the user.
+Before presenting any layout options or UI decisions during brainstorming, run ALL of the following in order:
+
+1. **Consistency audit** — Read existing components in `src/components/` and `src/hooks/`. Identify the established interaction patterns (input model, display conventions, button layout). Explicitly confirm whether the new feature will follow or intentionally deviate from them. This must happen before any clarifying questions about layout.
+2. **Platform research** — For any consumer-facing UI feature, look up how iOS and Android native apps handle the equivalent feature. Reference findings in the design discussion.
+3. **`ui-ux-pro-max`** — Invoke the skill and run domain searches relevant to the UI being designed.
+
+All three must complete before any mockup or layout option is shown to the user.
 
 ## Testing
 All hook logic must have unit tests. Run `npm test` before opening any PR.
