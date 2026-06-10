@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 
 const CURRENCIES_URL = "https://api.frankfurter.dev/v1/currencies";
-const ratesUrl = (base) => `https://api.frankfurter.dev/v1/latest?from=${base}`;
+const ratesUrl = (base) => `https://api.frankfurter.dev/v1/latest?base=${base}`;
 
 const currenciesCache = { data: null };
 const ratesCache = {};
@@ -15,15 +15,16 @@ export default function useRates() {
   const [allCurrencies, setAllCurrencies] = useState([]);
   const [rates, setRates] = useState({});
   const [rateDate, setRateDate] = useState("");
-  const [from, setFrom] = useState("USD");
-  const [to, setTo] = useState("EUR");
-  const [amount, setAmount] = useState("1");
+  const [fromCurrency, setFromCurrency] = useState("USD");
+  const [toCurrency, setToCurrency] = useState("EUR");
+  const [amount, setAmount] = useState("");
+  const [pickerTarget, setPickerTarget] = useState(null);
+  const [tableExpanded, setTableExpanded] = useState(false);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [retryCount, setRetryCount] = useState(0);
 
-  // Currencies — fetch once, cache for session
   useEffect(() => {
     if (currenciesCache.data) {
       setAllCurrencies(currenciesCache.data);
@@ -39,14 +40,13 @@ export default function useRates() {
         currenciesCache.data = list;
         setAllCurrencies(list);
       })
-      .catch(() => {}); // fallback: allCurrencies stays [], rows show code only
+      .catch(() => {});
   }, []);
 
-  // Rates — fetch when from changes or retry is requested
   useEffect(() => {
-    if (ratesCache[from]) {
-      setRates(ratesCache[from].rates);
-      setRateDate(ratesCache[from].date);
+    if (ratesCache[fromCurrency]) {
+      setRates(ratesCache[fromCurrency].rates);
+      setRateDate(ratesCache[fromCurrency].date);
       setLoading(false);
       setError(null);
       return;
@@ -56,10 +56,10 @@ export default function useRates() {
     setLoading(true);
     setError(null);
 
-    fetch(ratesUrl(from), { signal: controller.signal })
+    fetch(ratesUrl(fromCurrency), { signal: controller.signal })
       .then((r) => r.json())
       .then((data) => {
-        ratesCache[from] = data;
+        ratesCache[fromCurrency] = data;
         setRates(data.rates);
         setRateDate(data.date);
         setLoading(false);
@@ -71,54 +71,88 @@ export default function useRates() {
       });
 
     return () => controller.abort();
-  }, [from, retryCount]);
+  }, [fromCurrency, retryCount]);
 
   const result = useMemo(() => {
-    const n = Number(amount);
-    if (!amount || isNaN(n) || rates[to] == null) return "—";
-    return (n * rates[to]).toLocaleString(undefined, {
-      maximumFractionDigits: 4,
-    });
-  }, [amount, to, rates]);
+    if (rates[toCurrency] == null) return "—";
+    return (parseFloat(amount || "0") * rates[toCurrency]).toFixed(2);
+  }, [amount, toCurrency, rates]);
 
   const currencies = useMemo(() => {
     const q = search.trim().toLowerCase();
     return allCurrencies.filter(
       (c) =>
-        c.code !== from &&
+        c.code !== fromCurrency &&
         (q === "" ||
           c.code.toLowerCase().includes(q) ||
           c.name.toLowerCase().includes(q)),
     );
-  }, [allCurrencies, search, from]);
+  }, [allCurrencies, search, fromCurrency]);
 
-  const swap = () => {
-    setFrom(to);
-    setTo(from);
+  const pressDigit = (digit) => {
+    setAmount((prev) => {
+      if (prev === "" && digit === "0") return prev;
+      const dotIdx = prev.indexOf(".");
+      const intDigits = dotIdx === -1 ? prev.length : dotIdx;
+      if (dotIdx === -1 && intDigits >= 10) return prev;
+      return prev + digit;
+    });
   };
 
+  const pressDecimal = () => {
+    setAmount((prev) => (prev.includes(".") ? prev : prev + "."));
+  };
+
+  const pressBackspace = () => {
+    setAmount((prev) => (prev.length <= 1 ? "" : prev.slice(0, -1)));
+  };
+
+  const swap = () => {
+    const swapAmount = result === "—" ? "" : result;
+    setFromCurrency(toCurrency);
+    setToCurrency(fromCurrency);
+    setAmount(swapAmount);
+  };
+
+  const selectCurrency = (code) => {
+    if (pickerTarget === "from") setFromCurrency(code);
+    else if (pickerTarget === "to") setToCurrency(code);
+    setPickerTarget(null);
+  };
+
+  const openPicker = (target) => setPickerTarget(target);
+  const closePicker = () => setPickerTarget(null);
+  const toggleTable = () => setTableExpanded((v) => !v);
+
   const retry = () => {
-    delete ratesCache[from];
+    delete ratesCache[fromCurrency];
     setRetryCount((c) => c + 1);
   };
 
   return {
     rates,
-    currencies, // filtered by search, excludes from — for rate table
-    allCurrencies, // full list — for currency dropdowns
+    currencies,
+    allCurrencies,
     rateDate,
-    from,
-    to,
+    fromCurrency,
+    toCurrency,
     amount,
     result,
+    pickerTarget,
+    tableExpanded,
     search,
     loading,
     error,
-    setFrom,
-    setTo,
-    setAmount,
-    setSearch,
+    pressDigit,
+    pressDecimal,
+    pressBackspace,
     swap,
+    selectCurrency,
+    openPicker,
+    closePicker,
+    toggleTable,
+    setSearch,
+    setToCurrency,
     retry,
   };
 }
